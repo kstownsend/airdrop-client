@@ -8,6 +8,8 @@ import { Point } from "ol/geom";
 // eslint-disable-next-line react-hooks/rules-of-hooks
 proj.useGeographic();
 
+// send position to the api via our web socket so that other players can see it
+
 export default function createGpsLayer(map, options) {
   const gpsLayer = new VectorLayer({
     source: new VectorSource(),

@@ -12,17 +12,9 @@ window.store = store;
 export default function useStore(...args) {
   const [state, setState] = useState(store.state);
 
-  console.log("useStore.js: useStore() args", state);
-
   useEffect(
     () => {
-      console.log("useStore.js: useEffect()");
       const listener = (e) => {
-        console.log(
-          "useStore.js: useEffect() listener()",
-          e.detail,
-          state === e.detail
-        );
         setState({ ...e.detail });
       };
       store.addEventListener("statechange", listener);

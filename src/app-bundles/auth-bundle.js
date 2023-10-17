@@ -35,50 +35,58 @@ export default {
     return state.auth.errorMsg;
   },
 
-  clearErrorMsg: () => {
-    return {
-      errorMsg: "",
-    };
-  },
-
-  login: (_, username, password, avatar) => {
-    return fetch(`${apiUrl}/auth/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username, password, avatar }),
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          return res.json();
-        } else {
-          throw new Error("Login failed, please try again.");
-        }
-      })
-      .then((data) => {
-        return {
-          token: data.token,
-          isLoggedIn: true,
-          errorMsg: "",
-          _event: "login",
-        };
-      })
-      .catch((err) => {
-        return {
-          token: "",
-          isLoggedIn: false,
-          errorMsg: err.message,
-        };
+  clearErrorMsg:
+    () =>
+    ({ set }) => {
+      set({
+        errorMsg: "",
       });
-  },
+    },
 
-  logout() {
-    return {
-      token: "",
-      isLoggedIn: false,
-      errorMsg: "",
-      _event: "logout",
-    };
-  },
+  login:
+    (username, password, avatar) =>
+    ({ set, fire }) => {
+      return fetch(`${apiUrl}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password, avatar }),
+      })
+        .then((res) => {
+          if (res.status === 200) {
+            return res.json();
+          } else {
+            throw new Error("Login failed, please try again.");
+          }
+        })
+        .then((data) => {
+          set({
+            token: data.token,
+            isLoggedIn: true,
+            errorMsg: "",
+            _event: "login",
+          });
+          fire("login");
+        })
+        .catch((err) => {
+          set({
+            token: "",
+            isLoggedIn: false,
+            errorMsg: err.message,
+          });
+        });
+    },
+
+  logout:
+    () =>
+    ({ set, fire }) => {
+      set({
+        token: "",
+        isLoggedIn: false,
+        errorMsg: "",
+        _event: "logout",
+      });
+      fire("logout");
+    },
 };

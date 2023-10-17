@@ -31,6 +31,7 @@ class Store extends EventTarget {
     super();
     this.state = {};
     this.initFns = [];
+    this.persist = [];
     bundles.forEach((bundle) => this.loadBundle(bundle));
     this.init();
   }
@@ -64,6 +65,25 @@ class Store extends EventTarget {
     });
   }
 
+  setState(bundleName) {
+    return (newState) => {
+      this.state[bundleName] = Object.assign(
+        {},
+        this.state[bundleName],
+        newState
+      );
+      this.fire(new CustomEvent("statechange", { detail: this.state }));
+      if (this.persist.includes(bundleName)) {
+        console.log("should persist", bundleName);
+        setCache(bundleName, this.state[bundleName]);
+      }
+    };
+  }
+
+  fireEvent(eventName, detail) {
+    this.fire(new CustomEvent(eventName, { detail }));
+  }
+
   loadBundleSetters(bundle) {
     Object.keys(bundle).forEach((key) => {
       if (
@@ -78,30 +98,17 @@ class Store extends EventTarget {
 
       if (key.indexOf("get") !== 0) {
         this[key] = function (...args) {
-          const newState = bundle[key].apply(null, [this, ...args]);
-          Promise.resolve(newState).then((value) => {
-            this.state[bundle.name] = Object.assign(
-              {},
-              this.state[bundle.name],
-              value
-            );
-
-            this.fire(new CustomEvent("statechange", { detail: this.state }));
-
-            if (bundle.persist) {
-              setCache(bundle.name, this.state[bundle.name]);
-            }
-
-            if (value._event) {
-              if (value._event_detail) {
-                this.fire(
-                  new CustomEvent(value._event, { detail: value._event_detail })
-                );
-              } else {
-                this.fire(new Event(value._event));
-              }
-            }
-          });
+          const fn = bundle[key](...args);
+          if (typeof fn === "function") {
+            fn.apply(null, [
+              {
+                store: this,
+                set: this.setState.bind(this).apply(null, [bundle.name]),
+                fire: this.fireEvent.bind(this),
+              },
+            ]);
+            return;
+          }
         };
       }
     });
@@ -113,20 +120,28 @@ class Store extends EventTarget {
     }
   }
 
+  loadBundlePersists(bundle) {
+    if (bundle.persist) {
+      this.persist.push(bundle.name);
+    }
+  }
+
   init() {
     console.log("init");
-    this.initFns.forEach((fn) => fn(this));
+    this.initFns.forEach((fn) => fn({ store: this }));
   }
 
   loadBundle(bundle) {
     console.log("loading bundle", bundle.name);
     this.loadBundleState(bundle);
+    this.loadBundlePersists(bundle);
     this.loadBundleGetters(bundle);
     this.loadBundleSetters(bundle);
     this.loadInitFunctions(bundle);
   }
 
   fire(e) {
+    console.log(e);
     this.dispatchEvent(e);
   }
 
