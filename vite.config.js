@@ -8,6 +8,7 @@ export default defineConfig(({ command }) => {
   };
 
   if (command == "build") {
+    console.log("building for production");
     const homepage = "https://willbreitkreutz.github.io/airdrop-client";
     return {
       ...config,
@@ -22,6 +23,7 @@ export default defineConfig(({ command }) => {
       },
     };
   } else {
+    console.log("building for development");
     return {
       ...config,
       ...{
