@@ -8,6 +8,9 @@ import { Point } from "ol/geom";
 // eslint-disable-next-line react-hooks/rules-of-hooks
 proj.useGeographic();
 
+// eslint-disable-next-line no-undef
+const apiRoot = __API_ROOT__;
+
 export default {
   name: "gpsLayer",
 
@@ -47,7 +50,7 @@ export default {
         source: new VectorSource(),
         style: new Style({
           image: new Icon({
-            src: `http://localhost:3000/avatars/${username}.png`,
+            src: `${apiRoot}/avatars/${username}.png`,
             scale: 0.7,
             anchor: [0.5, 0.8],
           }),

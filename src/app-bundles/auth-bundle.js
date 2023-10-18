@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-undef
-const apiUrl = __API_URL__;
+const apiRoot = __API_ROOT__;
 
 export default {
   name: "auth",
@@ -47,7 +47,7 @@ export default {
   login:
     (username, password, avatar) =>
     ({ set, fire }) => {
-      return fetch(`${apiUrl}/auth/login`, {
+      return fetch(`${apiRoot}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

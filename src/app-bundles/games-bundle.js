@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-undef
-const apiUrl = __API_URL__;
+const apiRoot = __API_ROOT__;
 
 export default {
   name: "games",
@@ -35,7 +35,7 @@ export default {
     ({ store, set }) => {
       const token = store.getToken();
       if (!token) return null;
-      fetch(`${apiUrl}/games`, {
+      fetch(`${apiRoot}/games`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -65,7 +65,7 @@ export default {
 
       set({ joinedGame: join_code });
       const token = store.getToken();
-      fetch(`${apiUrl}/auth/ws-token?joinCode=${join_code}`, {
+      fetch(`${apiRoot}/auth/ws-token?joinCode=${join_code}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -80,7 +80,7 @@ export default {
         .then((data) => {
           const socketToken = data.wsToken;
           const soc = new WebSocket(
-            `${apiUrl.replace(
+            `${apiRoot.replace(
               "http",
               "ws"
             )}/soc?channel=${join_code}&wsToken=${socketToken}`

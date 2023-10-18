@@ -9,7 +9,7 @@ import { Point } from "ol/geom";
 proj.useGeographic();
 
 // eslint-disable-next-line no-undef
-const apiUrl = __API_URL__;
+const apiRoot = __API_ROOT__;
 
 export default {
   name: "players",
@@ -34,7 +34,7 @@ export default {
           const username = f.get("username");
           return new Style({
             image: new Icon({
-              src: `http://localhost:3000/avatars/${username}.png`,
+              src: `${apiRoot}/avatars/${username}.png`,
               scale: 0.7,
               anchor: [0.15, 0.8],
             }),
@@ -65,7 +65,7 @@ export default {
       const token = store.getToken();
       const joinCode = store.getJoinedGame();
       if (!token || !joinCode) return null;
-      fetch(`${apiUrl}/games/${joinCode}/players`, {
+      fetch(`${apiRoot}/games/${joinCode}/players`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
