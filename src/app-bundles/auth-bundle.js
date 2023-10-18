@@ -1,4 +1,5 @@
-const apiUrl = import.meta.env.VITE_API_URL;
+// eslint-disable-next-line no-undef
+const apiUrl = __API_URL__;
 
 export default {
   name: "auth",

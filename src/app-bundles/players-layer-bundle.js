@@ -8,7 +8,8 @@ import { Point } from "ol/geom";
 // eslint-disable-next-line react-hooks/rules-of-hooks
 proj.useGeographic();
 
-const apiUrl = import.meta.env.VITE_API_URL;
+// eslint-disable-next-line no-undef
+const apiUrl = __API_URL__;
 
 export default {
   name: "players",
