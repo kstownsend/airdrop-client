@@ -13,6 +13,7 @@ export default defineConfig(({ command }) => {
     return {
       ...config,
       ...{
+        base: `${homepage}/`,
         server: {
           host: true,
           origin: `${homepage}`,
