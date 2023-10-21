@@ -45,6 +45,8 @@ export default {
     ({ store, set }) => {
       const username = store.getUsername();
       const map = store.getMap();
+      const existingLayer = store.getGpsLayer();
+      if (existingLayer) return;
 
       const layer = new VectorLayer({
         source: new VectorSource(),
@@ -75,13 +77,23 @@ export default {
 
       if ("geolocation" in navigator) {
         console.log("geolocation available, starting watch");
+        let posId = 0;
         navigator.geolocation.watchPosition(
           (position) => {
+            console.log("position", posId);
             const { latitude, longitude } = position.coords;
             const coords = [longitude, latitude];
             myLocation.setGeometry(new Point(coords));
-            map.getView().fit(layer.getSource().getExtent(), { maxZoom: 18 });
+            if (posId === 0) {
+              map.getView().fit(layer.getSource().getExtent(), {
+                maxZoom: 18,
+                duration: 500,
+              });
+            } else {
+              map.getView().animate({ center: coords, duration: 300 });
+            }
             store.broadcastLocationChange();
+            posId++;
           },
           console.error,
           { enableHighAccuracy: true }

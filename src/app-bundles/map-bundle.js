@@ -1,6 +1,6 @@
 import { Map, View } from "ol";
 import { Tile as TileLayer } from "ol/layer";
-import { OSM } from "ol/source";
+import { XYZ } from "ol/source";
 import * as proj from "ol/proj";
 proj.useGeographic();
 
@@ -15,14 +15,18 @@ export default {
 
   createMap:
     (options) =>
-    ({ set, fire }) => {
+    ({ store, set, fire }) => {
       const { target, layers = [] } = options;
+      const existingMap = store.getMap();
+      if (existingMap) return;
 
       const map = new Map({
         target: target,
         layers: [
           new TileLayer({
-            source: new OSM(),
+            source: new XYZ({
+              url: "https://cartodb-basemaps-{a-c}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
+            }),
           }),
           ...layers,
         ],

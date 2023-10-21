@@ -18,7 +18,6 @@ export default function GameMap({ game }) {
 
   useEffect(() => {
     if (!mapRef.current) return;
-    console.log("creating map");
     createMap({ target: mapRef.current });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mapRef]);

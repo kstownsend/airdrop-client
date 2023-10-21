@@ -1,4 +1,5 @@
 import authBundle from "./auth-bundle";
+import gameBoundaryLayerBundle from "./game-boundary-layer-bundle";
 import gamesBundle from "./games-bundle";
 import gpsLayerBundle from "./gps-layer-bundle";
 import mapBundle from "./map-bundle";
@@ -10,4 +11,5 @@ export default [
   mapBundle,
   gpsLayerBundle,
   playersLayerBundle,
+  gameBoundaryLayerBundle,
 ];

@@ -12,6 +12,15 @@ export default {
 
   getGames: (state) => state.games.games,
 
+  getGamesByJoinCode: (state) => {
+    const games = state.games.games;
+    const gamesByJoinCode = {};
+    games.forEach((game) => {
+      gamesByJoinCode[game.join_code] = game;
+    });
+    return gamesByJoinCode;
+  },
+
   getJoinedGame: (state) => state.games.joinedGame,
 
   getSocket: (state) => state.games.socket,

@@ -11,6 +11,17 @@ proj.useGeographic();
 // eslint-disable-next-line no-undef
 const apiRoot = __API_ROOT__;
 
+// utility function to create a player feature
+function createPlayerFeature(player) {
+  const { username, score, position } = player;
+  const feature = new Feature({
+    geometry: new Point(position),
+  });
+  feature.set("username", username);
+  feature.set("score", score);
+  return feature;
+}
+
 export default {
   name: "players",
 
@@ -27,6 +38,8 @@ export default {
     () =>
     ({ store, set }) => {
       const map = store.getMap();
+      const existingLayer = store.getPlayersLayer();
+      if (existingLayer) return;
 
       const layer = new VectorLayer({
         source: new VectorSource(),
@@ -41,7 +54,7 @@ export default {
             text: new Text({
               text: `@${username}`,
               font: "bold italic 16px sans-serif",
-              offsetY: -45,
+              offsetY: -65,
               overflow: true,
               fill: new Fill({
                 color: "#fff",
@@ -61,7 +74,7 @@ export default {
 
   loadPlayers:
     () =>
-    ({ store, set }) => {
+    ({ store, set, fire }) => {
       const token = store.getToken();
       const joinCode = store.getJoinedGame();
       if (!token || !joinCode) return null;
@@ -81,35 +94,30 @@ export default {
           set({
             players: data
               .map((p) => {
+                if (!p.position) return null;
                 return {
                   ...p,
                   position: p.position.split(",").map(parseFloat),
                 };
               })
+              .filter((p) => !!p)
               .reduce((acc, p) => {
                 const { username } = p;
-                const feature = store.createPlayerFeature(p);
-                acc[username] = feature;
+                acc[username] = createPlayerFeature(p);
                 return acc;
               }, {}),
           });
+          fire("players-loaded");
         });
     },
 
-  // needs to be outside the store, or just not abstracted
-  createPlayerFeature:
-    (player) =>
+  addPlayersToMap:
+    () =>
     ({ store }) => {
+      const players = store.getPlayers();
       const layer = store.getPlayersLayer();
-      const src = layer.getSource();
-      const { username, score, position } = player;
-      const feature = new Feature({
-        geometry: new Point(position),
-      });
-      feature.set("username", username);
-      feature.set("score", score);
-      src.addFeature(feature);
-      return feature;
+      const features = Object.values(players);
+      layer.getSource().addFeatures(features);
     },
 
   updatePlayerLocation:
@@ -132,6 +140,7 @@ export default {
   init: ({ store }) => {
     store.on("map-created", store.createPlayersLayer);
     store.on("game-joined", store.loadPlayers);
+    store.on("players-loaded", store.addPlayersToMap);
     store.on("user-location-update", store.updatePlayerLocation);
   },
 };
