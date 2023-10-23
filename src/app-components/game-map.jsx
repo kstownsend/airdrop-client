@@ -3,10 +3,11 @@ import useStore from "../hooks/useStore";
 
 export default function GameMap({ game }) {
   const mapRef = useRef(null);
-  const { isSocketOpened, joinGame, createMap } = useStore(
+  const { isSocketOpened, joinGame, createMap, cleanUpMap } = useStore(
     "getIsSocketOpen",
     "joinGame",
-    "createMap"
+    "createMap",
+    "cleanUpMap"
   );
 
   useEffect(() => {
@@ -19,6 +20,7 @@ export default function GameMap({ game }) {
   useEffect(() => {
     if (!mapRef.current) return;
     createMap({ target: mapRef.current });
+    return cleanUpMap;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mapRef]);
 

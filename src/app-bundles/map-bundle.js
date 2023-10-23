@@ -18,26 +18,35 @@ export default {
     ({ store, set, fire }) => {
       const { target, layers = [] } = options;
       const existingMap = store.getMap();
-      if (existingMap) return;
-
-      const map = new Map({
-        target: target,
-        layers: [
-          new TileLayer({
-            source: new XYZ({
-              url: "https://cartodb-basemaps-{a-c}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
+      if (existingMap) {
+        existingMap.setTarget(target);
+      } else {
+        const map = new Map({
+          target: target,
+          layers: [
+            new TileLayer({
+              source: new XYZ({
+                url: "https://cartodb-basemaps-{a-c}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
+              }),
             }),
+            ...layers,
+          ],
+          view: new View({
+            center: [-96, 37.8],
+            zoom: 5,
           }),
-          ...layers,
-        ],
-        view: new View({
-          center: [-96, 37.8],
-          zoom: 5,
-        }),
-      });
-      set({
-        map: map,
-      });
-      fire("map-created");
+        });
+        set({
+          map: map,
+        });
+        fire("map-created");
+      }
+    },
+
+  cleanUpMap:
+    () =>
+    ({ store }) => {
+      const map = store.getMap();
+      map.setTarget(null);
     },
 };

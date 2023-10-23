@@ -102,13 +102,18 @@ export default {
             fire("game-joined");
           };
           soc.onmessage = (e) => {
-            console.log("message received", e.data);
             const data = JSON.parse(e.data);
             if (!data || !data.type)
               return console.log("invalid message received", data);
             switch (data.type) {
               case "USER_LOCATION_UPDATE":
                 fire("user-location-update", data.payload);
+                break;
+              case "PRIZE_POINT":
+                fire("new-prize-point", data.payload);
+                break;
+              case "PRIZE_CLAIMED":
+                fire("prize-claimed", data.payload);
                 break;
               default:
                 console.log("unknown message received", data);

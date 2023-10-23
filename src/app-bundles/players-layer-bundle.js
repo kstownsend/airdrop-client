@@ -2,11 +2,7 @@ import { Feature } from "ol";
 import { Vector as VectorLayer } from "ol/layer";
 import { Vector as VectorSource } from "ol/source";
 import { Style, Fill, Stroke, Icon, Text } from "ol/style";
-import * as proj from "ol/proj";
 import { Point } from "ol/geom";
-
-// eslint-disable-next-line react-hooks/rules-of-hooks
-proj.useGeographic();
 
 // eslint-disable-next-line no-undef
 const apiRoot = __API_ROOT__;
@@ -34,6 +30,8 @@ export default {
 
   getPlayers: (state) => state.players.players,
 
+  getScores: (state) => state.players.scores,
+
   createPlayersLayer:
     () =>
     ({ store, set }) => {
@@ -45,16 +43,17 @@ export default {
         source: new VectorSource(),
         style: (f) => {
           const username = f.get("username");
+          const score = f.get("score");
           return new Style({
             image: new Icon({
               src: `${apiRoot}/avatars/${username}.png`,
               scale: 0.7,
-              anchor: [0.15, 0.8],
+              anchor: [0.5, 0.8],
             }),
             text: new Text({
-              text: `@${username}`,
+              text: `@${username}: ${score}`,
               font: "bold italic 16px sans-serif",
-              offsetY: -65,
+              offsetY: -45,
               overflow: true,
               fill: new Fill({
                 color: "#fff",
@@ -87,7 +86,7 @@ export default {
           if (res.status === 200) {
             return res.json();
           } else {
-            throw new Error("Failed to load games");
+            throw new Error("Failed to load players");
           }
         })
         .then((data) => {
@@ -125,14 +124,17 @@ export default {
     ({ store, set }) => {
       const layer = store.getPlayersLayer();
       const players = store.getPlayers();
-      const { username, position } = e.detail;
+      const { username, score, position } = e.detail;
       const playerFeature = players[username];
       if (!playerFeature) {
-        const feature = store.createPlayerFeature(e.detail);
+        const feature = createPlayerFeature(e.detail);
         players[username] = feature;
         set({ players: { ...players } });
       } else {
-        playerFeature.setGeometry(new Point(position));
+        playerFeature.setGeometry(
+          new Point(position.split(",").map(parseFloat))
+        );
+        playerFeature.set("score", score);
         layer.changed();
       }
     },
@@ -142,5 +144,6 @@ export default {
     store.on("game-joined", store.loadPlayers);
     store.on("players-loaded", store.addPlayersToMap);
     store.on("user-location-update", store.updatePlayerLocation);
+    store.on("prize-claimed", store.updatePlayerLocation);
   },
 };

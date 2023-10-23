@@ -13,9 +13,6 @@ export default function GameList({ onSelect }) {
             onClick={() => onSelect(game)}
           >
             {game.name}
-            <span className="badge badge-primary badge-pill">
-              {game?.players?.length || 0}
-            </span>
           </li>
         ))}
       </ul>
