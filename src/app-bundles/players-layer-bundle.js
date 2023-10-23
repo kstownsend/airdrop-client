@@ -129,6 +129,7 @@ export default {
       if (!playerFeature) {
         const feature = createPlayerFeature(e.detail);
         players[username] = feature;
+        layer.getSource().addFeature(feature);
         set({ players: { ...players } });
       } else {
         playerFeature.setGeometry(
