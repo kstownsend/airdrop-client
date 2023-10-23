@@ -88,43 +88,8 @@ export default {
         })
         .then((data) => {
           const socketToken = data.wsToken;
-          const soc = new WebSocket(
-            `${apiRoot.replace(
-              "http",
-              "ws"
-            )}/soc?channel=${join_code}&wsToken=${socketToken}`
-          );
-          soc.onopen = () => {
-            set({
-              socket: soc,
-            });
-            fire("socket-opened");
-            fire("game-joined");
-          };
-          soc.onmessage = (e) => {
-            const data = JSON.parse(e.data);
-            if (!data || !data.type)
-              return console.log("invalid message received", data);
-            switch (data.type) {
-              case "USER_LOCATION_UPDATE":
-                fire("user-location-update", data.payload);
-                break;
-              case "PRIZE_POINT":
-                fire("new-prize-point", data.payload);
-                break;
-              case "PRIZE_CLAIMED":
-                fire("prize-claimed", data.payload);
-                break;
-              default:
-                console.log("unknown message received", data);
-            }
-          };
-          soc.onerror = () => {
-            store.clearCurrentGame();
-          };
-          soc.onclose = () => {
-            store.clearCurrentGame();
-          };
+          // @TODO need to wire up the websocket to make this realtime
+          console.log(socketToken);
         })
         .catch((error) => {
           console.error(error);

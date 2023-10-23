@@ -81,28 +81,8 @@ export default {
       const existingLayer = store.getPrizesLayer();
       if (existingLayer) return;
 
-      const prizeAreaStyle = function (feature) {
-        return new Style({
-          stroke: new Stroke({
-            color: "rgba(255, 0, 0)",
-            width: 1,
-          }),
-          fill: new Fill({
-            color: "rgba(255, 0, 0, 0.05)",
-          }),
-          text: new Text({
-            text: `${feature.get("value")} pts`,
-            overflow: true,
-            fill: new Fill({
-              color: "#000",
-            }),
-            stroke: new Stroke({
-              color: "#fff",
-              width: 3,
-            }),
-          }),
-        });
-      };
+      // @TODO need to implement a functional style for our prize areas
+      const prizeAreaStyle = () => {};
 
       const layer = new VectorLayer({
         source: new VectorSource(),
@@ -117,7 +97,6 @@ export default {
 
   loadPrizes:
     () =>
-    // eslint-disable-next-line no-unused-vars
     ({ store }) => {
       const layer = store.getPrizesLayer();
       const token = store.getToken();

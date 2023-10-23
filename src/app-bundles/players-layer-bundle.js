@@ -122,22 +122,8 @@ export default {
   updatePlayerLocation:
     (e) =>
     ({ store, set }) => {
-      const layer = store.getPlayersLayer();
-      const players = store.getPlayers();
-      const { username, score, position } = e.detail;
-      const playerFeature = players[username];
-      if (!playerFeature) {
-        const feature = createPlayerFeature(e.detail);
-        players[username] = feature;
-        layer.getSource().addFeature(feature);
-        set({ players: { ...players } });
-      } else {
-        playerFeature.setGeometry(
-          new Point(position.split(",").map(parseFloat))
-        );
-        playerFeature.set("score", score);
-        layer.changed();
-      }
+      // @TODO update the player feature, or add it to the map if it does not already exist
+      console.log("need to update", e.detail);
     },
 
   init: ({ store }) => {

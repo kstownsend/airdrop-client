@@ -21,25 +21,7 @@ export default {
       if (existingMap) {
         existingMap.setTarget(target);
       } else {
-        const map = new Map({
-          target: target,
-          layers: [
-            new TileLayer({
-              source: new XYZ({
-                url: "https://cartodb-basemaps-{a-c}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
-              }),
-            }),
-            ...layers,
-          ],
-          view: new View({
-            center: [-96, 37.8],
-            zoom: 5,
-          }),
-        });
-        set({
-          map: map,
-        });
-        fire("map-created");
+        // implement map creation then fire 'map-created' event
       }
     },
 
